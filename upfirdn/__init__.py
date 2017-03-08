@@ -30,7 +30,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
-from Resampler import ResamplerRR, ResamplerRC, ResamplerCR, ResamplerCC
+from .Resampler import ResamplerRR, ResamplerRC, ResamplerCR, ResamplerCC
 
 def enumdims(ary, dims=(0,), complement=False):
     """Enumerate over the given array dimensions
@@ -102,7 +102,10 @@ def dim2back(x, xdim=-1):
     num_dims_x = len(x.shape)
     if xdim < 0:
         xdim = num_dims_x + xdim
-    return x.transpose(*(range(xdim) + range(xdim+1, num_dims_x) + [xdim]))
+    transpose_arguments = list(range(xdim)) + \
+                          list(range(xdim+1, num_dims_x)) + \
+                          [xdim]
+    return x.transpose(*transpose_arguments)
 
 def back2dim(x, xdim=-1):
     """
@@ -125,8 +128,10 @@ def back2dim(x, xdim=-1):
     num_dims_x = len(x.shape)
     if xdim < 0:
         xdim = num_dims_x + xdim
-    return x.transpose(*(range(xdim) + [num_dims_x-1] + \
-                         range(xdim, num_dims_x-1)))
+    transpose_arguments = list(range(xdim)) + \
+                          [num_dims_x-1] + \
+                          list(range(xdim, num_dims_x-1))
+    return x.transpose(*transpose_arguments)
 
 
 # Index into Resampler object type switchyard is 
@@ -337,5 +342,5 @@ if __name__ == '__main__':
     h = np.ones((3,))
     x = np.random.randn(2,3,4)
     y = upfirdn(x, h, 3, 1, xdim=0)
-    print y
+    print(y)
     
