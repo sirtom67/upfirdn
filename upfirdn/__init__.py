@@ -189,7 +189,7 @@ class ResamplerBank(object):
         xi[-1] = xi[-1][0:1]
  
         # xx is ignored
-        xx, hh = np.broadcast_arrays(x[xi], h)
+        xx, hh = np.broadcast_arrays(x[tuple(xi)], h)
         self.hh = hh
         bank = np.zeros(self.hh.shape[:-1], dtype=object)
         for idx, hi in enumdims(self.hh, (-1,), complement=True):
@@ -235,9 +235,9 @@ class ResamplerBank(object):
         y = np.zeros(xx.shape[:-1] + (needed_out_count,), \
                 dtype=self.output_type)
         for idx, xi in enumdims(xx, (-1,), complement=True):
-            out_count = self.bank[idx].apply(xi, y[idx])
+            out_count = self.bank[tuple(idx)].apply(xi, y[tuple(idx)])
             if all_samples:
-                self.bank[idx].apply(z,  y[idx][out_count:])
+                self.bank[tuple(idx)].apply(z,  y[tuple(idx)][out_count:])
         return back2dim(y, self.xdim)
 
 

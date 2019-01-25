@@ -110,7 +110,7 @@ class ResamplerCase(object):
         tic()
         yr = resample(x, self.coefs, self.p, self.q)
         resample_time = toc()
-        out_count = np.ceil(float(self.p) / self.q * len(x))
+        out_count = int(np.ceil(float(self.p) / self.q * len(x)))
         yr = yr[:out_count]
         
         for test in ['oneshot', 'persample', 'randomsteps']:
