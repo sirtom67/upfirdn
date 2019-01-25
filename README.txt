@@ -38,6 +38,11 @@ along with a python module with a functional and object interface.
 
 See INSTALL.txt for notes about installation.
 
+NOTE - a re-implementation of upfirdn is available in Scipy as of version 0.18.0
+(released July 25, 2016) https://docs.scipy.org/doc/scipy/reference/release.0.18.0.html.
+It is very similar in API to this function, except that scipy has switched 
+to have the filter first (i.e. scipy: upfirdn(h, x), this repo:  upfirdn(x, h)).
+
 ALGORITHM DESCRIPTION
 A "filter bank with resampling" is an operation on an input signal that 
 generates an output signal, consisting of the following 3 steps:
