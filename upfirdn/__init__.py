@@ -30,7 +30,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
-from Resampler import ResamplerRR, ResamplerRC, ResamplerCR, ResamplerCC
+from .Resampler import ResamplerRR, ResamplerRC, ResamplerCR, ResamplerCC
 
 def enumdims(ary, dims=(0,), complement=False):
     """Enumerate over the given array dimensions
@@ -102,7 +102,10 @@ def dim2back(x, xdim=-1):
     num_dims_x = len(x.shape)
     if xdim < 0:
         xdim = num_dims_x + xdim
-    return x.transpose(*(range(xdim) + range(xdim+1, num_dims_x) + [xdim]))
+    transpose_arguments = list(range(xdim)) + \
+                          list(range(xdim+1, num_dims_x)) + \
+                          [xdim]
+    return x.transpose(*transpose_arguments)
 
 def back2dim(x, xdim=-1):
     """
@@ -125,8 +128,10 @@ def back2dim(x, xdim=-1):
     num_dims_x = len(x.shape)
     if xdim < 0:
         xdim = num_dims_x + xdim
-    return x.transpose(*(range(xdim) + [num_dims_x-1] + \
-                         range(xdim, num_dims_x-1)))
+    transpose_arguments = list(range(xdim)) + \
+                          [num_dims_x-1] + \
+                          list(range(xdim, num_dims_x-1))
+    return x.transpose(*transpose_arguments)
 
 
 # Index into Resampler object type switchyard is 
@@ -184,7 +189,7 @@ class ResamplerBank(object):
         xi[-1] = xi[-1][0:1]
  
         # xx is ignored
-        xx, hh = np.broadcast_arrays(x[xi], h)
+        xx, hh = np.broadcast_arrays(x[tuple(xi)], h)
         self.hh = hh
         bank = np.zeros(self.hh.shape[:-1], dtype=object)
         for idx, hi in enumdims(self.hh, (-1,), complement=True):
@@ -230,9 +235,9 @@ class ResamplerBank(object):
         y = np.zeros(xx.shape[:-1] + (needed_out_count,), \
                 dtype=self.output_type)
         for idx, xi in enumdims(xx, (-1,), complement=True):
-            out_count = self.bank[idx].apply(xi, y[idx])
+            out_count = self.bank[tuple(idx)].apply(xi, y[tuple(idx)])
             if all_samples:
-                self.bank[idx].apply(z,  y[idx][out_count:])
+                self.bank[tuple(idx)].apply(z,  y[tuple(idx)][out_count:])
         return back2dim(y, self.xdim)
 
 
@@ -337,5 +342,5 @@ if __name__ == '__main__':
     h = np.ones((3,))
     x = np.random.randn(2,3,4)
     y = upfirdn(x, h, 3, 1, xdim=0)
-    print y
+    print(y)
     
